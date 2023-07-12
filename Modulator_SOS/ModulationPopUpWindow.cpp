@@ -10,7 +10,7 @@
 
 #include "ModulationPopUpWindow.h"
 
-ModulationPopUpWindow::ModulationPopUpWindow(AudioPluginAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
+ModulationPopUpWindow::ModulationPopUpWindow(IAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
                       float curveWidth, float curveHeight,
                       int resetParamIndex,
                       int freezeParamIndex,
@@ -18,9 +18,28 @@ ModulationPopUpWindow::ModulationPopUpWindow(AudioPluginAudioProcessor& p, LFO_m
                       int syncRateParamIndex,
                       int rateBlendParamIndex,
                       int ampParamIndex,
-                      std::vector<juce::String> modulationSourceNames, std::vector<juce::String> modulationDestinationNames)
-: SOSPopUpWindowManager("Modulation", "parameter mod", 15, WHITE),
-  modEditor(p, _lfoModProcessor, 150.0f, 150.0f, 1, 2, 3, 4, 5, 6, modulationSourceNames, modulationDestinationNames, juce::Colours::black, RED, BLUE)
+                      std::vector<juce::String> modulationSourceNames,
+                      std::vector<juce::String> modulationDestinationNames,
+                     juce::Colour backgroundColor,
+                     juce::Colour textColor,
+                     juce::Colour syncRateColor,
+                     juce::Colour freeRateColor)
+: SOSPopUpWindowManager("Modulation", "parameter mod", 15, backgroundColor, textColor),
+  modEditor(p,
+            _lfoModProcessor,
+            150.0f,
+            150.0f,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            std::move(modulationSourceNames),
+            std::move(modulationDestinationNames),
+            textColor,
+            freeRateColor,
+            syncRateColor)
 {
     setInterceptsMouseClicks(false, true); //no clicks on this, but children are ok
     shouldDisplayWindow.addListener(this);

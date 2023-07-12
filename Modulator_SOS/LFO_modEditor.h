@@ -14,14 +14,14 @@
 #include "ModulatorCurveAdjusterTrace.h"
 #include "RateModesComponent.h"
 #include "DestinationMatrixComponent.h"
-#include "../ColorDefines_ShaveNFade.h"
+
 #include <sliders_sos/sliders_sos.h>
 #include <sos_curve_adjuster/sos_curve_adjuster.h>
 
 class LFO_modEditor : public juce::Timer, public juce::Component
 {
 public:
-    LFO_modEditor(AudioPluginAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
+    LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
                   float curveWidth, float curveHeight,
                   int resetParamIndex,
                   int freezeParamIndex,
@@ -43,7 +43,7 @@ private:
     juce::String GetFreeRatePercentageString();
     juce::String GetSyncRatePercentageString();
 
-    AudioPluginAudioProcessor& processor;
+    //AudioPluginAudioProcessor& processor;
     LFO_modProcessor& lfoModProcessor;
     
     SOSToggleButton resetButton;
@@ -58,11 +58,11 @@ private:
     SOSSliderVertical ampSlider;
     
     DestinationMatrixComponent destinationMatrix;
-    
+
+    juce::Colour trackColor {juce::Colour(180, 188, 194)};
     juce::Colour textColor {juce::Colours::black};
     juce::Colour freeColor {juce::Colours::red};
     juce::Colour syncColor {juce::Colours::blue};
-    juce::Colour knobOutlineColor {juce::Colours::black};
-    juce::Colour knobPointerColor {juce::Colours::black};
+
 
 };

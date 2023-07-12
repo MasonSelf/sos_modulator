@@ -10,7 +10,7 @@
 
 #include "LFO_modEditor.h"
 
-LFO_modEditor::LFO_modEditor(AudioPluginAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
+LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
               float curveWidth, float curveHeight,
               int resetParamIndex,
               int freezeParamIndex,
@@ -22,16 +22,16 @@ LFO_modEditor::LFO_modEditor(AudioPluginAudioProcessor& p, LFO_modProcessor& _lf
              juce::Colour _textColor,
              juce::Colour _freeColor,
              juce::Colour _syncColor)
-: processor(p), lfoModProcessor(_lfoModProcessor),
+: lfoModProcessor(_lfoModProcessor),
   resetButton(p, lfoModProcessor.resetParamID, resetParamIndex, "reset"),
   freezeButton(p, lfoModProcessor.freezeParamID, freezeParamIndex, "freeze"),
   curve(curveWidth, curveHeight, lfoModProcessor.curveAdjusterProcessor, true, true, false),
   directionMode(_lfoModProcessor, "direction_mode"),
-  freeRate(p, lfoModProcessor.rateFreeParamID, freeRateParamIndex, freeColor, knobOutlineColor, knobPointerColor, " hz"),
-  syncRate(p, lfoModProcessor.rateSyncParamID, syncRateParamIndex, syncColor, knobOutlineColor, knobPointerColor),
-  rateBlend(p, lfoModProcessor.rateBlendParamID, rateBlendParamIndex, GREY, juce::Colours::black, juce::Colours::black),
-  ampSlider(p, lfoModProcessor.scaleParamID, ampParamIndex, GREY, juce::Colours::black, juce::Colours::black),
-  destinationMatrix(modulationDestinationNames, modulationSourceNames, lfoModProcessor.modMatrix, GREY, juce::Colours::black),
+  freeRate(p, lfoModProcessor.rateFreeParamID, freeRateParamIndex, _freeColor, _freeColor, _textColor,  " hz"),
+  syncRate(p, lfoModProcessor.rateSyncParamID, syncRateParamIndex, _syncColor, _syncColor, _textColor),
+  rateBlend(p, lfoModProcessor.rateBlendParamID, rateBlendParamIndex, juce::Colours::grey, juce::Colours::black, juce::Colours::black),
+  ampSlider(p, lfoModProcessor.scaleParamID, ampParamIndex, juce::Colours::grey, juce::Colours::black, juce::Colours::black),
+  destinationMatrix(std::move(modulationDestinationNames), std::move(modulationSourceNames), lfoModProcessor.modMatrix, juce::Colours::black),
   textColor(_textColor),
   freeColor(_freeColor),
   syncColor(_syncColor)

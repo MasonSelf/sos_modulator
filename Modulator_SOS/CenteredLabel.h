@@ -14,7 +14,8 @@
 struct CenteredLabel : public juce::Label
 {
 
-    CenteredLabel(const juce::String name, const juce::String displayText, juce::Colour _backgroundColor, juce::Colour _textColor)
+    CenteredLabel(const juce::String name, const juce::String displayText, juce::Colour _textColor, juce::Colour _backgroundColor = {
+            juce::Colours::transparentBlack})
         : juce::Label(name, displayText), backgroundColor(_backgroundColor), textColor(_textColor)
     {
     }

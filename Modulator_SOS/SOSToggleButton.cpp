@@ -10,7 +10,7 @@
 
 #include "SOSToggleButton.h"
 
-SOSToggleButton::SOSToggleButton(AudioPluginAudioProcessor& p, const juce::Identifier& paramID ,int paramIndex, const juce::String& textToDisplay)
+SOSToggleButton::SOSToggleButton(IAudioProcessor& p, const juce::Identifier& paramID ,int paramIndex, const juce::String& textToDisplay)
     : Button(textToDisplay), audioProcessor(p)
 {
     setToggleable(true);
@@ -18,9 +18,9 @@ SOSToggleButton::SOSToggleButton(AudioPluginAudioProcessor& p, const juce::Ident
     
     buttonAttachment =
         std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>
-        (audioProcessor.apvts, paramID.toString(), *this);
+        (audioProcessor.GetAPVTS(), paramID.toString(), *this);
 
-    auto param = std::make_unique<juce::AudioParameterBool*>(static_cast<juce::AudioParameterBool*>(audioProcessor.getParameters().getUnchecked(paramIndex)));
+    auto param = std::make_unique<juce::AudioParameterBool*>(static_cast<juce::AudioParameterBool*>(audioProcessor.GetParams().getUnchecked(paramIndex)));
 
     setToggleState((*param)->get(), juce::dontSendNotification);
 }

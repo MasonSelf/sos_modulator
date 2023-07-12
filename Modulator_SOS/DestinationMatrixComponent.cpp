@@ -10,15 +10,15 @@
 
 #include "DestinationMatrixComponent.h"
 
-DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String> destinations, std::vector<juce::String> sources, ModulationMatrixProcessor& p, juce::Colour _labelColor, juce::Colour _textColor)
-: processor(p), labelBackgroundColor(_labelColor), textColor(_textColor)
+DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String> destinations, std::vector<juce::String> sources, ModulationMatrixProcessor& p, juce::Colour _textColor)
+: processor(p), textColor(_textColor)
 {
     setInterceptsMouseClicks(false, true);
     
     //add source labels (only once)
     for (auto& s : sources)
     {
-        sourceNames.emplace_back(std::make_unique<CenteredLabel>(s,s, labelBackgroundColor, textColor));
+        sourceNames.emplace_back(std::make_unique<CenteredLabel>(s,s, textColor));
         addAndMakeVisible(sourceNames.back().get());
     }
     
@@ -26,7 +26,7 @@ DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String>
     for (auto& d : destinations)
     {
         //add to desintation labels
-        destinationNames.push_back(std::make_unique<CenteredLabel>(d, d, labelBackgroundColor, textColor));
+        destinationNames.push_back(std::make_unique<CenteredLabel>(d, d, textColor));
         addAndMakeVisible(destinationNames.back().get());
         for (auto& s : sources)
         {

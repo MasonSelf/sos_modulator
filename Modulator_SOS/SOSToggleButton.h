@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "../PluginProcessor.h"
+#include <sos_IAudioProcessor/sos_IAudioProcessor.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 
@@ -17,11 +17,11 @@
 class SOSToggleButton : public juce::Button
 {
 public:
-    SOSToggleButton(AudioPluginAudioProcessor& p, const juce::Identifier& paramID ,int paramIndex, const juce::String& textToDisplay);
+    SOSToggleButton(IAudioProcessor& p, const juce::Identifier& paramID ,int paramIndex, const juce::String& textToDisplay);
     void paintButton (juce::Graphics &g, bool, bool) override;
 
 private:
-    AudioPluginAudioProcessor& audioProcessor;
+    IAudioProcessor& audioProcessor;
     
 public:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> buttonAttachment;

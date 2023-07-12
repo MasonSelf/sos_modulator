@@ -9,15 +9,16 @@
 */
 
 #pragma once
-#include "../PopUpWindow_SOS/SOSPopUpWindowManager.h"
+
 #include "../Modulator_SOS/LFO_modEditor.h"
-#include "../PluginProcessor.h"
-#include "../ColorDefines_ShaveNFade.h"
+#include <sos_popup_window/sos_popup_window.h>
+#include <sos_IAudioProcessor/sos_IAudioProcessor.h>
+
 
 class ModulationPopUpWindow : public SOSPopUpWindowManager, public juce::Component, public juce::Value::Listener
 {
 public:
-    ModulationPopUpWindow(AudioPluginAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
+    ModulationPopUpWindow(IAudioProcessor& p, LFO_modProcessor& _lfoModProcessor,
                           float curveWidth, float curveHeight,
                           int resetParamIndex,
                           int freezeParamIndex,
@@ -25,10 +26,15 @@ public:
                           int syncRateParamIndex,
                           int rateBlendParamIndex,
                           int ampParamIndex,
-                          std::vector<juce::String> modulationSourceNames, std::vector<juce::String> modulationDestinationNames);
+                          std::vector<juce::String> modulationSourceNames, std::vector<juce::String> modulationDestinationNames,
+                          juce::Colour backgroundColor,
+                          juce::Colour textColor,
+                          juce::Colour syncRateColor,
+                          juce::Colour freeRateColor);
     ~ModulationPopUpWindow() override;
     void resized() override;
     void valueChanged (juce::Value&) override;
 private:
     LFO_modEditor modEditor;
+
 };
