@@ -24,7 +24,7 @@ struct CenteredLabel : public juce::Label
     {
         g.setColour(backgroundColor);
         g.fillAll();
-        g.setFont(12.0f);
+        g.setFont(10.0f);
         g.setColour(textColor);
         g.drawFittedText(getText(), 0, 0, getWidth(), getHeight(), juce::Justification::centred, 1);
     }

@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include <juce_core/juce_core.h>
+#include <juce_audio_basics/juce_audio_basics.h>
 
 struct TempoDataHandler
 {
@@ -19,7 +19,31 @@ struct TempoDataHandler
     std::atomic<double> sampleRate{ 44100.0 };
     std::atomic<bool> justStartedPlaying{false};
     std::atomic<double> quarterNoteWithinBar;
-    
+
+    void ProcessTempoData(juce::Optional<juce::AudioPlayHead::PositionInfo> info)
+    {
+        if (info->getPpqPosition().hasValue() && info->getPpqPositionOfLastBarStart().hasValue())
+        {
+            quarterNoteWithinBar.store(*(info->getPpqPosition()) - *(info->getPpqPositionOfLastBarStart()));
+        }
+
+        bool isPlaying = info->getIsPlaying();
+        HandleJustStartedPlayingFlag(isPlaying);
+        auto possibleBpm = info->getBpm();
+        if (possibleBpm.hasValue())
+        {
+            tempo = *possibleBpm;
+        }
+
+        auto possibleTimeSig = info->getTimeSignature();
+        if (possibleTimeSig.hasValue())
+        {
+            timeSigNum = possibleTimeSig->numerator;
+            timeSigDenom = possibleTimeSig->denominator;
+        }
+    }
+
+private:
     void HandleJustStartedPlayingFlag(bool isPlaying)
     {
         if (isPlaying && previousPlayingState == false)
@@ -32,7 +56,6 @@ struct TempoDataHandler
         }
         previousPlayingState = isPlaying;
     }
-    
-private:
+
     bool previousPlayingState {false};
 };

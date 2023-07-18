@@ -30,7 +30,7 @@ void DestinationAttenuverter::paint(juce::Graphics& g)
         g.fillAll(juce::Colours::white);
     }
     g.setColour(juce::Colours::black);
-    g.setFont(15.0f);
+    g.setFont(12.0f);
     g.drawFittedText(GetValueAsString(), 0, 0, getWidth(), getHeight(), juce::Justification::centred, 1);
 }
 

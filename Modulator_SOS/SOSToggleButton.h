@@ -20,6 +20,7 @@ public:
     SOSToggleButton(IAudioProcessor& p, const juce::Identifier& paramID ,int paramIndex, const juce::String& textToDisplay);
     void paintButton (juce::Graphics &g, bool, bool) override;
 
+    bool cachedToggleState {false};
 private:
     IAudioProcessor& audioProcessor;
     

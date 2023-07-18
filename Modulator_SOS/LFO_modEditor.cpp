@@ -98,9 +98,6 @@ void LFO_modEditor::paint(juce::Graphics& g)
     g.setFont(9.0f);
     g.drawFittedText(GetFreeRatePercentageString(), freeRate.getX() + 22, freeRate.getBottom() + 10, 25, 10, juce::Justification::centred, 1);
     g.drawFittedText(GetSyncRatePercentageString(), syncRate.getX() + 22, syncRate.getBottom() + 10, 25, 10, juce::Justification::centred, 1);
-    //draw scaled output
-//    g.setColour(juce::Colours::yellow);
-//    g.fillEllipse(curve.getRight() - 2, ((1.0f - lfoModProcessor.value.load()) * curve.GetHeight() + curve.getY()) - 2, 4, 4);
 }
 
 void LFO_modEditor::timerCallback()
@@ -112,9 +109,8 @@ void LFO_modEditor::resized()
     int lrMargin = 4;
     int verticalMargin = 4;
     int componentHeight = getHeight() - verticalMargin * 2;
-    float segmentWidth = (getWidth() - lrMargin * 2) / 7.0f;
     
-    int currentX = lrMargin + lrMargin;
+    int currentX = lrMargin;
     
     
     curve.setBounds(currentX, verticalMargin , curve.GetWidth(), curve.GetHeight());
@@ -123,18 +119,26 @@ void LFO_modEditor::resized()
     resetButton.setBounds(currentX + lrMargin, curve.getBottom() + 24, curve.GetWidth() / 2 - lrMargin, 20);
     freezeButton.setBounds(resetButton.getRight() + lrMargin, curve.getBottom() + 24, curve.GetWidth() / 2 - lrMargin, 20);
     
-    currentX = curve.getRight() + lrMargin * 4;
-    directionMode.setBounds(currentX + 15, verticalMargin + 26, segmentWidth * 2 - 30, componentHeight / 8);
-    //auto rateSectionY = verticalMargin + 140;
-    freeRate.setBounds(currentX, directionMode.getBottom() + verticalMargin + 25, segmentWidth , componentHeight / 4);
-    syncRate.setBounds(currentX + freeRate.getWidth(), directionMode.getBottom() + verticalMargin + 25, segmentWidth, componentHeight / 4);
+    currentX = curve.getRight() + lrMargin;
+
+    //divide the remaining width in half for
+    // 1. direction/rates/blend
+    // 2. attenuate/mod matrix
+    auto segmentWidth = (getWidth() - currentX) / 2;
+
+    //1. direction/rates/blend
+    directionMode.setBounds(currentX + lrMargin * 2, verticalMargin + 26, segmentWidth - lrMargin * 4, componentHeight / 8);
+
+    freeRate.setBounds(currentX, directionMode.getBottom() + verticalMargin + 25, segmentWidth / 2 , componentHeight / 4);
+    syncRate.setBounds(currentX + freeRate.getWidth(), directionMode.getBottom() + verticalMargin + 25, segmentWidth / 2, componentHeight / 4);
     
-    rateBlend.setBounds(currentX, freeRate.getBottom() + verticalMargin, segmentWidth * 2, componentHeight / 4);
+    rateBlend.setBounds(currentX, freeRate.getBottom() + verticalMargin, segmentWidth , componentHeight / 4);
+
+    //2. attenuate/mod matrix
+    currentX += segmentWidth;
+    ampSlider.setBounds(currentX + lrMargin, 25, segmentWidth / 6, resetButton.getBottom() - curve.getY());
     
-    currentX = rateBlend.getRight() + lrMargin * 8;
-    ampSlider.setBounds(currentX, curve.getX() + 23, 30, curve.GetHeight() + 18);
-    
-    destinationMatrix.setBounds(ampSlider.getRight() + lrMargin * 8, ampSlider.getY() + 20, 110, 110);
+    destinationMatrix.setBounds(ampSlider.getRight(), ampSlider.getY() + 10, segmentWidth / 6 * 5, 110);
 }
 
 juce::String LFO_modEditor::GetFreeRatePercentageString()

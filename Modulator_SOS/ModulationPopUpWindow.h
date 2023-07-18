@@ -34,7 +34,7 @@ public:
     ~ModulationPopUpWindow() override;
     void resized() override;
     void valueChanged (juce::Value&) override;
-private:
+protected:
     LFO_modEditor modEditor;
 
 };
