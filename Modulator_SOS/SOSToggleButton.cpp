@@ -28,7 +28,7 @@ SOSToggleButton::SOSToggleButton(IAudioProcessor& p, const juce::Identifier& par
 void SOSToggleButton::paintButton (juce::Graphics& g, bool, bool)
 {
     getToggleState() ?
-        g.fillAll(juce::Colours::yellow) : g.fillAll(juce::Colours::grey);
+        g.fillAll(juce::Colours::yellow) : g.fillAll(juce::Colours::lightgrey);
     g.setColour(juce::Colours::black);
     g.setFont(15.0f);
     g.drawFittedText(getName(), 0, 0, getWidth(), getHeight(), juce::Justification::centred, 1);
