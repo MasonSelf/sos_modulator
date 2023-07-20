@@ -10,8 +10,12 @@
 
 #include "DestinationMatrixComponent.h"
 
-DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String> destinations, std::vector<juce::String> sources, ModulationMatrixProcessor& p, juce::Colour _textColor)
-: processor(p), textColor(_textColor)
+DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String> destinations,
+                                                       std::vector<juce::String> sources,
+                                                       ModulationMatrixProcessor& p,
+                                                       juce::Colour _textColor,
+                                                       juce::Slider& _attenuationSlider)
+: processor(p), textColor(_textColor), attenuationSlider(_attenuationSlider)
 {
     setInterceptsMouseClicks(false, true);
     
@@ -31,7 +35,7 @@ DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String>
         for (auto& s : sources)
         {
             //add attenuverter component
-            attenuverterComponents.emplace_back(std::make_unique<DestinationAttenuverter>(s, d, processor.modVals[i].get()));
+            attenuverterComponents.emplace_back(std::make_unique<DestinationAttenuverter>(s, d, processor.modVals[i].get(), attenuationSlider));
             
             addAndMakeVisible(attenuverterComponents.back().get());
             

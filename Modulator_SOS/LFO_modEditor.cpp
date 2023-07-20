@@ -31,7 +31,7 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
   syncRate(p, lfoModProcessor.rateSyncParamID, syncRateParamIndex, _syncColor, _syncColor, _textColor),
   rateBlend(p, lfoModProcessor.rateBlendParamID, rateBlendParamIndex, juce::Colours::grey, juce::Colours::black, juce::Colours::black),
   ampSlider(p, lfoModProcessor.scaleParamID, ampParamIndex, juce::Colours::grey, juce::Colours::black, juce::Colours::black),
-  destinationMatrix(std::move(modulationDestinationNames), std::move(modulationSourceNames), lfoModProcessor.modMatrix, juce::Colours::black),
+  destinationMatrix(std::move(modulationDestinationNames), std::move(modulationSourceNames), lfoModProcessor.modMatrix, juce::Colours::black, ampSlider),
   textColor(_textColor),
   freeColor(_freeColor),
   syncColor(_syncColor)
@@ -96,6 +96,13 @@ void LFO_modEditor::paint(juce::Graphics& g)
     g.drawFittedText("rate blend", freeRate.getX(), rateBlend.getBottom() - 12, syncRate.getRight() - freeRate.getX(), 15, juce::Justification::centred, 1);
     g.drawFittedText("attenuate", ampSlider.getX() - 20, ampSlider.getY() - 25, ampSlider.getWidth() + 40, 15, juce::Justification::centred, 1);
     g.setFont(9.0f);
+
+    //abstract this to its own class and resize it!
+    juce::DrawableText freePercentage;
+    freePercentage.setText(GetFreeRatePercentageString());
+    freePercentage.setFont(9.0f, true);
+    freePercentage.setJustification(juce::Justification::centred);
+
     g.drawFittedText(GetFreeRatePercentageString(), freeRate.getX() + 22, freeRate.getBottom() + 10, 25, 10, juce::Justification::centred, 1);
     g.drawFittedText(GetSyncRatePercentageString(), syncRate.getX() + 22, syncRate.getBottom() + 10, 25, 10, juce::Justification::centred, 1);
 }
@@ -145,12 +152,18 @@ juce::String LFO_modEditor::GetFreeRatePercentageString()
 {
     auto normalizedVal = 1.0f - static_cast<float>(rateBlend.getValue());
     juce::String result;
-    return result.toDecimalStringWithSignificantFigures(normalizedVal * 100.0f, 3) + "%";
+
+    return result.toDecimalStringWithSignificantFigures(normalizedVal * 100.0f, GetDisplaySigFigures(normalizedVal)) + "%";
 }
 
 juce::String LFO_modEditor::GetSyncRatePercentageString()
 {
     auto normalizedVal = static_cast<float>(rateBlend.getValue());
     juce::String result;
-    return result.toDecimalStringWithSignificantFigures(normalizedVal * 100.0f, 3) + "%";
+    return result.toDecimalStringWithSignificantFigures(normalizedVal * 100.0f, GetDisplaySigFigures(normalizedVal)) + "%";
+}
+
+int LFO_modEditor::GetDisplaySigFigures(float normalizedValue)
+{
+    return normalizedValue < 0.1f ? 2 : 3;
 }

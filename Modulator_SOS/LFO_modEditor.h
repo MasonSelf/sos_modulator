@@ -42,6 +42,7 @@ private:
     
     juce::String GetFreeRatePercentageString();
     juce::String GetSyncRatePercentageString();
+    int GetDisplaySigFigures(float normalizedValue);
 
     //AudioPluginAudioProcessor& processor;
     LFO_modProcessor& lfoModProcessor;
@@ -56,7 +57,8 @@ private:
     SOSRotaryChoiceSlider syncRate;
     SOSSliderHorizontal rateBlend;
     SOSSliderVertical ampSlider;
-    
+
+    //this needs to be destroyed BEFORE ampSlider because it takes references to ampSlider
     DestinationMatrixComponent destinationMatrix;
 
     juce::Colour trackColor {juce::Colour(180, 188, 194)};

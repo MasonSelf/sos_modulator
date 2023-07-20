@@ -10,20 +10,25 @@
 
 #include "DestinationAttenuverter.h"
 
-DestinationAttenuverter::DestinationAttenuverter(juce::String _source, juce::String _destination, float value)
-: localValue(value), source(_source), destination(_destination)
+DestinationAttenuverter::DestinationAttenuverter(juce::String _source, juce::String _destination, float value, juce::Slider& slider)
+: localValue(value), source(_source), destination(_destination), attenuationSlider(slider)
 {
+    attenuationSlider.addListener(this);
 }
 
+DestinationAttenuverter::~DestinationAttenuverter()
+{
+    attenuationSlider.removeListener(this);
+}
 void DestinationAttenuverter::paint(juce::Graphics& g)
 {
     if (localValue > 0.0f)
     {
-        g.fillAll(juce::Colours::lightgreen);
+        g.fillAll(GetAttenuatedColor(juce::Colours::lightgreen));
     }
     else if (localValue < 0.0f)
     {
-        g.fillAll(juce::Colours::red);
+        g.fillAll(GetAttenuatedColor(juce::Colours::red));
     }
     else //0.0f
     {
@@ -51,14 +56,20 @@ void DestinationAttenuverter::mouseDrag(const juce::MouseEvent& e)
     startDragPos = e.position;
     if (localValue > 100.0f)
     {
-        localValue = 100.0f;
+        localValue = 100;
     }
     else if (localValue < -100.0f)
     {
-        localValue = -100.0f;
+        localValue = -100;
     }
     repaint();
 }
+
+void DestinationAttenuverter::sliderValueChanged(juce::Slider*)
+{
+    repaint();
+}
+
 
 juce::String DestinationAttenuverter::GetValueAsString()
 {
@@ -68,5 +79,14 @@ juce::String DestinationAttenuverter::GetValueAsString()
         result = "+" + result;
     }
     result = result.substring(0, 5);
+
+    //remove unnecessary "." if value is +/- 100%
+//    if (localValue == 100)
+
     return result + "%";
+}
+
+juce::Colour DestinationAttenuverter::GetAttenuatedColor(juce::Colour polarizationColor)
+{
+    return juce::Colours::white.interpolatedWith(polarizationColor, static_cast<float>(attenuationSlider.getValue()));
 }
