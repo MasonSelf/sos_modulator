@@ -23,8 +23,8 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
              juce::Colour _freeColor,
              juce::Colour _syncColor)
 : lfoModProcessor(_lfoModProcessor),
-  resetButton(p, lfoModProcessor.resetParamID, resetParamIndex, "reset"),
-  freezeButton(p, lfoModProcessor.freezeParamID, freezeParamIndex, "freeze"),
+  resetButton(p, lfoModProcessor.resetParamID, resetParamIndex, "reset", juce::Colours::white),
+  freezeButton(p, lfoModProcessor.freezeParamID, freezeParamIndex, "freeze", juce::Colours::white),
   curve(curveWidth, curveHeight, lfoModProcessor.curveAdjusterProcessor, true, true, false),
   directionMode(_lfoModProcessor, "direction_mode"),
   freeRate(p, lfoModProcessor.rateFreeParamID, freeRateParamIndex, _freeColor, _freeColor, _textColor,  " hz"),
