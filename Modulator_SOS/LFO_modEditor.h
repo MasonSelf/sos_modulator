@@ -66,5 +66,4 @@ private:
     juce::Colour freeColor {juce::Colours::red};
     juce::Colour syncColor {juce::Colours::blue};
 
-
 };

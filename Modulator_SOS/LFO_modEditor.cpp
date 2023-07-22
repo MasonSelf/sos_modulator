@@ -46,6 +46,7 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
     addAndMakeVisible(rateBlend);
     addAndMakeVisible(ampSlider);
     addAndMakeVisible(destinationMatrix);
+
     startTimerHz(60);
 }
 
@@ -97,14 +98,8 @@ void LFO_modEditor::paint(juce::Graphics& g)
     g.drawFittedText("attenuate", ampSlider.getX() - 20, ampSlider.getY() - 25, ampSlider.getWidth() + 40, 15, juce::Justification::centred, 1);
     g.setFont(9.0f);
 
-    //abstract this to its own class and resize it!
-    juce::DrawableText freePercentage;
-    freePercentage.setText(GetFreeRatePercentageString());
-    freePercentage.setFont(9.0f, true);
-    freePercentage.setJustification(juce::Justification::centred);
-
-    g.drawFittedText(GetFreeRatePercentageString(), freeRate.getX() + 22, freeRate.getBottom() + 10, 25, 10, juce::Justification::centred, 1);
-    g.drawFittedText(GetSyncRatePercentageString(), syncRate.getX() + 22, syncRate.getBottom() + 10, 25, 10, juce::Justification::centred, 1);
+    g.drawFittedText(GetFreeRatePercentageString(), freeRate.getX(), freeRate.getBottom(), freeRate.getWidth(), 30, juce::Justification::centred, 1);
+    g.drawFittedText(GetSyncRatePercentageString(), syncRate.getX(), syncRate.getBottom(), syncRate.getWidth(), 30, juce::Justification::centred, 1);
 }
 
 void LFO_modEditor::timerCallback()

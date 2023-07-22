@@ -30,3 +30,4 @@ BEGIN_JUCE_MODULE_DECLARATION
 #include "Modulator_SOS/SOSToggleButton.h"
 #include "Modulator_SOS/SyncTiming.h"
 #include "Modulator_SOS/TempoDataHandler.h"
+
