@@ -21,7 +21,8 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
               std::vector<juce::String> modulationSourceNames, std::vector<juce::String> modulationDestinationNames,
              juce::Colour _textColor,
              juce::Colour _freeColor,
-             juce::Colour _syncColor)
+             juce::Colour _syncColor,
+             juce::Colour _backgroundColor = juce::Colours::lightgrey)
 : lfoModProcessor(_lfoModProcessor),
   resetButton(p, lfoModProcessor.resetParamID, resetParamIndex, "reset", juce::Colours::white),
   freezeButton(p, lfoModProcessor.freezeParamID, freezeParamIndex, "freeze", juce::Colours::white),
@@ -34,7 +35,8 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
   destinationMatrix(std::move(modulationDestinationNames), std::move(modulationSourceNames), lfoModProcessor.modMatrix, juce::Colours::black, ampSlider),
   textColor(_textColor),
   freeColor(_freeColor),
-  syncColor(_syncColor)
+  syncColor(_syncColor),
+  backgroundColour(_backgroundColor)
 {
     addAndMakeVisible(resetButton);
     addAndMakeVisible(freezeButton);
@@ -57,6 +59,11 @@ LFO_modEditor::~LFO_modEditor()
 
 void LFO_modEditor::paint(juce::Graphics& g)
 {
+
+    g.setColour(backgroundColour);
+    g.setOpacity(0.5f);
+    g.fillAll();
+
     float rateTracerY = curve.getBottom() + 10.0f;
     float rateTracerDiameter = 10.0f;
     float tracerCenterY = rateTracerY + rateTracerDiameter / 2.0f;
@@ -92,10 +99,11 @@ void LFO_modEditor::paint(juce::Graphics& g)
     
     g.setFont(15.0f);
     g.setColour(textColor);
+    g.drawFittedText("modulation shape", curve.getX(), 0, curve.getWidth(), curve.getY(), juce::Justification::centred, 1);
     g.drawFittedText("direction", directionMode.getX(), 0, directionMode.getWidth(), directionMode.getY(), juce::Justification::centred, 1);
     g.drawFittedText("rates", freeRate.getX(), freeRate.getY() - 15, syncRate.getRight() - freeRate.getX(), 15, juce::Justification::centred, 1);
     g.drawFittedText("rate blend", freeRate.getX(), rateBlend.getBottom() - 12, syncRate.getRight() - freeRate.getX(), 15, juce::Justification::centred, 1);
-    g.drawFittedText("attenuate", ampSlider.getX() - 20, ampSlider.getY() - 25, ampSlider.getWidth() + 40, 15, juce::Justification::centred, 1);
+    g.drawFittedText("attenuate", ampSlider.getX() - 20, 0, ampSlider.getWidth() + 40, ampSlider.getY(), juce::Justification::centred, 1);
     g.setFont(9.0f);
 
     g.drawFittedText(GetFreeRatePercentageString(), freeRate.getX(), freeRate.getBottom(), freeRate.getWidth(), 30, juce::Justification::centred, 1);
@@ -115,7 +123,7 @@ void LFO_modEditor::resized()
     int currentX = lrMargin;
     
     
-    curve.setBounds(currentX, verticalMargin , curve.GetWidth(), curve.GetHeight());
+    curve.setBounds(currentX + 1, verticalMargin + 26 , curve.GetWidth(), curve.GetHeight());
     trace.setBounds(curve.getBounds().withBottom(curve.getBottom() + 50));
     
     resetButton.setBounds(currentX + lrMargin, curve.getBottom() + 24, curve.GetWidth() / 2 - lrMargin, 20);
@@ -138,7 +146,7 @@ void LFO_modEditor::resized()
 
     //2. attenuate/mod matrix
     currentX += segmentWidth;
-    ampSlider.setBounds(currentX + lrMargin, 25, segmentWidth / 6, resetButton.getBottom() - curve.getY());
+    ampSlider.setBounds(currentX + lrMargin, verticalMargin + 26, segmentWidth / 6, resetButton.getBottom() - curve.getY());
     
     destinationMatrix.setBounds(ampSlider.getRight(), ampSlider.getY() + 10, segmentWidth / 6 * 5, 110);
 }

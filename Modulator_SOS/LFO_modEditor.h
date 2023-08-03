@@ -32,7 +32,8 @@ public:
                   std::vector<juce::String> modulationSourceNames, std::vector<juce::String> modulationDestinationNames,
                   juce::Colour _textColor,
                   juce::Colour _freeColor,
-                  juce::Colour _syncColor);
+                  juce::Colour _syncColor,
+                  juce::Colour _backgroundColor);
     
     ~LFO_modEditor() override;
     void paint(juce::Graphics& g) override;
@@ -65,5 +66,6 @@ private:
     juce::Colour textColor {juce::Colours::black};
     juce::Colour freeColor {juce::Colours::red};
     juce::Colour syncColor {juce::Colours::blue};
+    juce::Colour backgroundColour {juce::Colours::lightgrey};
 
 };
