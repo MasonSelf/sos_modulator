@@ -33,6 +33,8 @@ public:
                   juce::Colour _textColor,
                   juce::Colour _freeColor,
                   juce::Colour _syncColor,
+                  juce::Colour matrixPositiveColor,
+                  juce::Colour matrixNegativeColor,
                   juce::Colour _backgroundColor);
     
     ~LFO_modEditor() override;

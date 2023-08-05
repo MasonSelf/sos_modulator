@@ -14,6 +14,8 @@ DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String>
                                                        std::vector<juce::String> sources,
                                                        ModulationMatrixProcessor& p,
                                                        juce::Colour _textColor,
+                                                       juce::Colour positiveColor,
+                                                       juce::Colour negativeColor,
                                                        juce::Slider& _attenuationSlider)
 : processor(p), textColor(_textColor), attenuationSlider(_attenuationSlider)
 {
@@ -35,7 +37,7 @@ DestinationMatrixComponent::DestinationMatrixComponent(std::vector<juce::String>
         for (auto& s : sources)
         {
             //add attenuverter component
-            attenuverterComponents.emplace_back(std::make_unique<DestinationAttenuverter>(s, d, processor.modVals[i].get(), attenuationSlider));
+            attenuverterComponents.emplace_back(std::make_unique<DestinationAttenuverter>(s, d, processor.modVals[i].get(), attenuationSlider, positiveColor, negativeColor));
             
             addAndMakeVisible(attenuverterComponents.back().get());
             

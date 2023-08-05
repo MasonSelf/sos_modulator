@@ -30,7 +30,9 @@ public:
                           juce::Colour backgroundColor,
                           juce::Colour textColor,
                           juce::Colour syncRateColor,
-                          juce::Colour freeRateColor);
+                          juce::Colour freeRateColor,
+                          juce::Colour matrixPositiveColor,
+                          juce::Colour matrixNegativeColor);
     ~ModulationPopUpWindow() override;
     void resized() override;
     void valueChanged (juce::Value&) override;

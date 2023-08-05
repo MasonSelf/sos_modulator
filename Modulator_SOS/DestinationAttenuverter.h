@@ -14,7 +14,7 @@
 class DestinationAttenuverter : public juce::Component, public juce::Slider::Listener
 {
 public:
-    DestinationAttenuverter(juce::String _source, juce::String _destination, float value, juce::Slider& slider);
+    DestinationAttenuverter(juce::String _source, juce::String _destination, float value, juce::Slider& slider, juce::Colour positiveColor, juce::Colour negativeColor);
     ~DestinationAttenuverter() override;
     void paint(juce::Graphics& g) override;
     void mouseDoubleClick(const juce::MouseEvent&) override;
@@ -31,4 +31,7 @@ private:
     juce::Colour GetAttenuatedColor(juce::Colour polarizationColor);
     juce::Point<float> startDragPos{0.0f, 0.0f};
     juce::Slider& attenuationSlider;
+
+    juce::Colour positiveColorFill {juce::Colours::lightgreen};
+    juce::Colour negativeColorFill {juce::Colours::red};
 };

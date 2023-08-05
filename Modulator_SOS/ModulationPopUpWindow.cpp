@@ -23,7 +23,9 @@ ModulationPopUpWindow::ModulationPopUpWindow(IAudioProcessor& p, LFO_modProcesso
                      juce::Colour backgroundColor,
                      juce::Colour textColor,
                      juce::Colour syncRateColor,
-                     juce::Colour freeRateColor)
+                     juce::Colour freeRateColor,
+                     juce::Colour matrixPositiveColor = juce::Colours::lightgreen,
+                     juce::Colour matrixNegativeColor = juce::Colours::red)
 : SOSPopUpWindowManager("Modulation", "parameter mod", 15, backgroundColor, textColor),
   modEditor(p,
             _lfoModProcessor,
@@ -39,7 +41,9 @@ ModulationPopUpWindow::ModulationPopUpWindow(IAudioProcessor& p, LFO_modProcesso
             std::move(modulationDestinationNames),
             textColor,
             freeRateColor,
-            syncRateColor)
+            syncRateColor,
+            matrixPositiveColor,
+            matrixNegativeColor)
 {
     setInterceptsMouseClicks(false, true); //no clicks on this, but children are ok
     shouldDisplayWindow.addListener(this);

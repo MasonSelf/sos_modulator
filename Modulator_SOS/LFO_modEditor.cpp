@@ -22,6 +22,8 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
              juce::Colour _textColor,
              juce::Colour _freeColor,
              juce::Colour _syncColor,
+             juce::Colour matrixPositiveColor,
+             juce::Colour matrixNegativeColor,
              juce::Colour _backgroundColor = juce::Colours::lightgrey)
 : lfoModProcessor(_lfoModProcessor),
   resetButton(p, lfoModProcessor.resetParamID, resetParamIndex, "reset", juce::Colours::white),
@@ -32,7 +34,7 @@ LFO_modEditor::LFO_modEditor(IAudioProcessor& p, LFO_modProcessor& _lfoModProces
   syncRate(p, lfoModProcessor.rateSyncParamID, syncRateParamIndex, _syncColor, _syncColor, _textColor),
   rateBlend(p, lfoModProcessor.rateBlendParamID, rateBlendParamIndex, juce::Colours::grey, juce::Colours::black, juce::Colours::black),
   ampSlider(p, lfoModProcessor.scaleParamID, ampParamIndex, juce::Colours::grey, juce::Colours::black, juce::Colours::black),
-  destinationMatrix(std::move(modulationDestinationNames), std::move(modulationSourceNames), lfoModProcessor.modMatrix, juce::Colours::black, ampSlider),
+  destinationMatrix(std::move(modulationDestinationNames), std::move(modulationSourceNames), lfoModProcessor.modMatrix, juce::Colours::black, matrixPositiveColor, matrixNegativeColor, ampSlider),
   textColor(_textColor),
   freeColor(_freeColor),
   syncColor(_syncColor),

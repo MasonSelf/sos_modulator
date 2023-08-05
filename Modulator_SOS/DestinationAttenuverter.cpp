@@ -10,8 +10,9 @@
 
 #include "DestinationAttenuverter.h"
 
-DestinationAttenuverter::DestinationAttenuverter(juce::String _source, juce::String _destination, float value, juce::Slider& slider)
-: localValue(value), source(_source), destination(_destination), attenuationSlider(slider)
+DestinationAttenuverter::DestinationAttenuverter(juce::String _source, juce::String _destination, float value, juce::Slider& slider,
+                                                 juce::Colour positiveColor, juce::Colour negativeColor)
+: localValue(value), source(_source), destination(_destination), attenuationSlider(slider), positiveColorFill(positiveColor), negativeColorFill(negativeColor)
 {
     attenuationSlider.addListener(this);
 }
@@ -24,11 +25,11 @@ void DestinationAttenuverter::paint(juce::Graphics& g)
 {
     if (localValue > 0.0f)
     {
-        g.fillAll(GetAttenuatedColor(juce::Colours::lightgreen));
+        g.fillAll(GetAttenuatedColor(positiveColorFill));
     }
     else if (localValue < 0.0f)
     {
-        g.fillAll(GetAttenuatedColor(juce::Colours::red));
+        g.fillAll(GetAttenuatedColor(negativeColorFill));
     }
     else //0.0f
     {

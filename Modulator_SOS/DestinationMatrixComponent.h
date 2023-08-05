@@ -21,6 +21,8 @@ public:
                                std::vector<juce::String> sources,
                                ModulationMatrixProcessor& p,
                                juce::Colour _textColor,
+                               juce::Colour positiveColor,
+                               juce::Colour negativeColor,
                                juce::Slider& _attenuationSlider);
     ~DestinationMatrixComponent() override;
     void resized() override;
