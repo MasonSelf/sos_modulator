@@ -21,7 +21,7 @@ enum SyncOptions
 
 const juce::StringArray SyncStrings
 {
-    "8 bars", "4 bars", "3 bars", "2 bars", "bar", "1/2", "1/4", "1/6", "1/8", "1/8T", "1/16", "1/16Q", "1/16T", "1/32", "1/32T", "1/64"
+    "8 bars", "4 bars", "3 bars", "2 bars", "bar", "1/2", "1/4", "1/4T", "1/8", "1/8T", "1/16", "1/16Q", "1/16T", "1/32", "1/32T", "1/64"
 };
 
 class SyncTiming
@@ -45,7 +45,7 @@ public:
         }
         else if (sync == SyncOptions::thirtysecondTriplet)
         {
-            return 1.0 / (samplesPerQuarterNote / 24.0);
+            return 1.0 / (samplesPerQuarterNote / 12.0);
         }
         else if (sync == SyncOptions::thirtysecond)
         {
