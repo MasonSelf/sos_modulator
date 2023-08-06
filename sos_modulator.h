@@ -4,10 +4,10 @@
 
 BEGIN_JUCE_MODULE_DECLARATION
 
-      ID:               ModulatorSynthsOfSelf
+      ID:               sos_modulator
       vendor:           Mason Self
       version:          0.0.1
-      name:             modulator_sos
+      name:             sos_modulator
       description:      ModulatorSynthsOfSelf
       license:          GPL/Commercial
       dependencies:     juce_core, juce_audio_utils,juce_gui_basics, juce_graphics, juce_audio_processors, sos_curve_adjuster, sliders_sos, sos_IAudioProcessor, sos_popup_window
