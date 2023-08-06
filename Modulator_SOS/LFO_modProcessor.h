@@ -78,9 +78,13 @@ private:
     DirectionState freeDirection{forwards};
     DirectionState syncDirection{forwards};
     
-    bool shouldResetFreeFlag {false};
+    bool alreadyResetFree {false};
     bool shouldResetSyncFlag {false};
-    bool syncWasReset {false};
+    
+    //these are set to 1.0 so they don't trigger redundant reset of phases
+    //the first call to IncrementSync() will have close to 0.0 values and then set these caches for useful comparison in future calls to IncrementSync()
+    double cachedMeasurePositionFraction{1.0};
+    double cachedQuarterNoteFraction{1.0};
     
     bool syncPhaseIsGreater;
     int cachedSyncIndex {-1};

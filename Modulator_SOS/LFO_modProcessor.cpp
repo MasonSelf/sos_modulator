@@ -52,19 +52,21 @@ void LFO_modProcessor::Process(int numSamples)
 void LFO_modProcessor::DetermineIncrementsPerBlock(int numSamples)
 {
     //free
-    incrementPerBlockFree = (*apvts.getRawParameterValue(rateFreeParamID)) / sampleRate * static_cast<double>(numSamples);
-    while (incrementPerBlockFree > 1.0)
-    {
-        incrementPerBlockFree -= 1.0;
-    }
+    incrementPerBlockFree = static_cast<double>(*apvts.getRawParameterValue(rateFreeParamID)) / sampleRate * static_cast<double>(numSamples);
+//    DBG(incrementPerBlockFree);
+//    while (incrementPerBlockFree > 1.0)
+//    {
+//        incrementPerBlockFree -= 1.0;
+//    }
     
     //sync
     incrementPerBlockSync = syncTiming.GetIncrementPerSample(dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(rateSyncParamID))->getIndex(), tempoData.tempo.load(), tempoData.timeSigNum.load(), tempoData.timeSigDenom.load()) * static_cast<double>(numSamples);
-    while (incrementPerBlockSync > 1.0)
-    {
-        incrementPerBlockSync -= 1.0;
-    }
+//    while (incrementPerBlockSync > 1.0)
+//    {
+//        incrementPerBlockSync -= 1.0;
+//    }
     
+    //ensure directions are correct for forwards/backwards settings
     if (selectedDirection.load() == 0) //forwards
     {
         if (freeDirection != forwards)      //free
@@ -91,51 +93,70 @@ void LFO_modProcessor::DetermineIncrementsPerBlock(int numSamples)
                                                               
 void LFO_modProcessor::IncrementFree()
 {
-    if (dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(resetParamID))->get()
-        && shouldResetFreeFlag == false
-        && ! dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(freezeParamID))->get())
+    if (dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(freezeParamID))->get())
     {
-        shouldResetFreeFlag = true;
-        freePhase.store(0.0);
         return;
     }
-    else if (! dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(resetParamID))->get() && shouldResetFreeFlag == true)
+    if (dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(resetParamID))->get())
     {
-        shouldResetFreeFlag = false;
+        if (! alreadyResetFree)
+        {
+            freePhase.store(0.0);
+            alreadyResetFree = true;
+            return;
+        }
+    }
+    else
+    {
+        alreadyResetFree = false;
     }
 
-    if (! dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(freezeParamID))->get())
+
+    if (freeDirection == forwards)
     {
-        if (freeDirection == forwards)
+        freePhase.store(freePhase.load() + incrementPerBlockFree);
+        
+        if (freePhase.load() > 1.0)
         {
-            freePhase.store(freePhase.load() + incrementPerBlockFree);
-            
-            if (freePhase.load() > 1.0 && selectedDirection.load() == 0) //forwards
+            if (selectedDirection.load() == 0) //forwards)
             {
-                freePhase.store(freePhase.load() - 1.0);
+                while (freePhase.load() > 1.0)
+                {
+                    freePhase.store(freePhase.load() - 1.0);
+                }
+                return;
             }
-            else if (freePhase.load() >= 1.0)
+            else
             {
                 if (selectedDirection.load() == 2 || selectedDirection.load() == 3) //bidirectional or bounce
                 {
                     freeDirection = backwards;
+                    freePhase.store(1.0 - (freePhase.load() - 1.0));
+                    return;
                 }
             }
         }
-        if (freeDirection == backwards)
+    }
+    if (freeDirection == backwards)
+    {
+        freePhase.store(freePhase.load() - incrementPerBlockFree);
+        
+        if (freePhase.load() < 0.0)
         {
-            freePhase.store(freePhase.load() - incrementPerBlockFree);
-            
-            if (freePhase.load() < 0.0 && selectedDirection.load() == 1) // backwards
+            if (selectedDirection.load() == 1) // backwards
             {
-                freePhase.store(freePhase.load() + 1.0);
+                while (freePhase.load() < 0.0)
+                {
+                    freePhase.store(freePhase.load() + 1.0);
+                }
+                return;
             }
-            else if (freePhase.load() <= 0.0)
+            else if (freePhase.load() < 0.0)
             {
                 if (selectedDirection.load() == 2 || selectedDirection.load() == 3) //bidirectional or bounce
                 {
                     freeDirection = forwards;
-                    freePhase.store(freePhase.load() + incrementPerBlockFree);
+                    freePhase.store(freePhase.load() * -1.0);
                 }
             }
         }
@@ -144,17 +165,18 @@ void LFO_modProcessor::IncrementFree()
 
 void LFO_modProcessor::IncrementSync()
 {
+    if (dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(freezeParamID))->get())
+    {
+        return;
+    }
     //check if reset button is on
     if (dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(resetParamID))->get() &&
         shouldResetSyncFlag == false)
     {
         shouldResetSyncFlag = true;
-        syncWasReset = false;
     }
 
-    //only increment if freeze is NOT on
-    if (! dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(freezeParamID))->get())
-    {
+
 //        //tighten loop for small subdivisions
 //        if (selectedDirection != 3 /*bounce*/ &&
 //            tempoData.quarterNoteWithinBar < 0.01f)
@@ -167,91 +189,94 @@ void LFO_modProcessor::IncrementSync()
 //                syncWasReset = false;
 //            }
 //        }
-            
-        if (syncDirection == forwards)
+        
+    if (syncDirection == forwards)
+    {
+        syncPhase.store(syncPhase.load() + incrementPerBlockSync);
+        
+        if (syncPhase.load() > 1.0 && selectedDirection == 0) //forwards
         {
-            syncPhase.store(syncPhase.load() + incrementPerBlockSync);
-            
-            if (syncPhase.load() > 1.0 && selectedDirection == 0) //forwards
+            syncPhase.store(syncPhase.load() - 1.0);
+        }
+        else if (syncPhase.load() >= 1.0)
+        {
+            if (selectedDirection == 2 || selectedDirection == 3) //bidirectional or bounce
             {
-                syncPhase.store(syncPhase.load() - 1.0);
-            }
-            else if (syncPhase.load() >= 1.0)
-            {
-                if (selectedDirection == 2 || selectedDirection == 3) //bidirectional or bounce
+                syncDirection = backwards;
+                if (syncPhase.load() > 1.0)
                 {
-                    syncDirection = backwards;
-                    if (syncPhase.load() > 1.0)
-                    {
-                        auto reflectedValue = 1.0 - (syncPhase.load() - 1.0); //only bounce off on 1.0 the value it passed 1.0
-                        syncPhase.store(reflectedValue);
-                    }
+                    auto reflectedValue = 1.0 - (syncPhase.load() - 1.0); //only bounce off on 1.0 the value it passed 1.0
+                    syncPhase.store(reflectedValue);
                 }
             }
         }
-        else if (syncDirection == backwards)
+    }
+    else if (syncDirection == backwards)
+    {
+        syncPhase.store(syncPhase.load() - incrementPerBlockSync);
+        
+        if (syncPhase.load() < 0.0 && selectedDirection == 1) //backwards
         {
-            syncPhase.store(syncPhase.load() - incrementPerBlockSync);
-            
-            if (syncPhase.load() < 0.0 && selectedDirection == 1) //backwards
+            syncPhase.store(syncPhase.load() + 1.0);
+        }
+        else if (syncPhase.load() <= 0.0)
+        {
+            if (selectedDirection == 2 || selectedDirection == 3) //bidirectional or bounce
             {
-                syncPhase.store(syncPhase.load() + 1.0);
-            }
-            else if (syncPhase.load() <= 0.0)
-            {
-                if (selectedDirection == 2 || selectedDirection == 3) //bidirectional or bounce
+                syncDirection = forwards;
+                
+                if (syncPhase.load() < 0.0)
                 {
-                    syncDirection = forwards;
-                    
-                    if (syncPhase.load() < 0.0)
-                    {
-                        auto reflectedValue = syncPhase.load() * -1.0; //only bounce off of 0.0 as much as it crossed into negative
-                        syncPhase.store(reflectedValue);
-                    }
+                    auto reflectedValue = syncPhase.load() * -1.0; //only bounce off of 0.0 as much as it crossed into negative
+                    syncPhase.store(reflectedValue);
                 }
             }
         }
+    
     }
     
 
     auto selectedIndex = static_cast<int>(*apvts.getRawParameterValue(rateSyncParamID));
-    if (tempoData.justStartedPlaying.load() == true || selectedIndex != cachedSyncIndex)
+    if (tempoData.justStartedPlayingFlag.load() == true || selectedIndex != cachedSyncIndex)
     {
         shouldResetSyncFlag = true;
-        syncWasReset = false;
-        tempoData.justStartedPlaying.store(false);
+        tempoData.justStartedPlayingFlag.store(false);
     }
     
     cachedSyncIndex = selectedIndex;
     
+    //DBG(tempoData.quarterNoteWithinBar);
     
-    if (shouldResetSyncFlag && ! syncWasReset && ! dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(freezeParamID))->get())
+    auto measurePositionFraction = tempoData.quarterNoteWithinBar.load();
+    auto quarterNoteFraction = measurePositionFraction - static_cast<double>(static_cast<int>(measurePositionFraction));
+    
+    if (shouldResetSyncFlag)
     {
         //6/8 support needed! 
         auto syncChoice = syncTiming.GetSyncOption(static_cast<int>(*apvts.getRawParameterValue(rateSyncParamID)));
-        if (syncChoice == TempoSync::SyncOptions::eightbars ||
-            syncChoice == TempoSync::SyncOptions::fourbars ||
-            syncChoice == TempoSync::SyncOptions::threebars ||
-            syncChoice == TempoSync::SyncOptions::twobars ||
-            syncChoice == TempoSync::SyncOptions::bar)
+        if (syncChoice == TempoSync::SyncOptions::eightBars ||
+            syncChoice == TempoSync::SyncOptions::fourBars ||
+            syncChoice == TempoSync::SyncOptions::threeBars ||
+            syncChoice == TempoSync::SyncOptions::twoBars ||
+            syncChoice == TempoSync::SyncOptions::oneBar)
         {
-            if (tempoData.quarterNoteWithinBar < 0.01f) //first beat of measure
+            if (measurePositionFraction < cachedMeasurePositionFraction) //first beat of measure
             {
                 syncPhase.store(0.0);
-                syncWasReset = true;
                 shouldResetSyncFlag = false;
             }
         }
         else 
         {
-            if ((tempoData.quarterNoteWithinBar - static_cast<float>(static_cast<int>(tempoData.quarterNoteWithinBar))) < 0.01f)
+            if (quarterNoteFraction < cachedQuarterNoteFraction) //start of quarterNote
             {
                 syncPhase.store(0.0);
-                syncWasReset = true;
                 shouldResetSyncFlag = false;
             }
         }
     }
+    cachedMeasurePositionFraction = measurePositionFraction;
+    cachedQuarterNoteFraction = quarterNoteFraction;
 }
 
 void LFO_modProcessor::CheckForBounceCross()
@@ -261,27 +286,29 @@ void LFO_modProcessor::CheckForBounceCross()
         if (syncPhaseIsGreater != DetermineIsSyncAheadOfFree())
         {
             //free
-            if (freePhase == forwards)
+            if (freeDirection == forwards)
             {
                 freeDirection = backwards;
-                freePhase.store(freePhase.load() - incrementPerBlockFree);
+                //freePhase.store(freePhase.load() - incrementPerBlockFree);
             }
             else
             {
                 freeDirection = forwards;
-                freePhase.store(freePhase.load() + incrementPerBlockFree);
+                //freePhase.store(freePhase.load() + incrementPerBlockFree);
             }
+            IncrementFree();
             //sync
             if (syncDirection == forwards)
             {
                 syncDirection = backwards;
-                syncPhase.store(syncPhase.load() - incrementPerBlockSync);
+                //syncPhase.store(syncPhase.load() - incrementPerBlockSync);
             }
             else
             {
                 syncDirection = forwards;
-                syncPhase.store(syncPhase.load() + incrementPerBlockSync);
+                //syncPhase.store(syncPhase.load() + incrementPerBlockSync);
             }
+            IncrementSync();
         }
     }
 }

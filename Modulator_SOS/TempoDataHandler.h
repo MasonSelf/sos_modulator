@@ -17,7 +17,7 @@ struct TempoDataHandler
     std::atomic<int> timeSigNum{ 4 };
     std::atomic<int> timeSigDenom{ 4 };
     std::atomic<double> sampleRate{ 44100.0 };
-    std::atomic<bool> justStartedPlaying{false};
+    std::atomic<bool> justStartedPlayingFlag{false};
     std::atomic<double> quarterNoteWithinBar;
 
     void ProcessTempoData(juce::Optional<juce::AudioPlayHead::PositionInfo> info)
@@ -48,11 +48,11 @@ private:
     {
         if (isPlaying && previousPlayingState == false)
         {
-            justStartedPlaying.store(true);
+            justStartedPlayingFlag.store(true);
         }
         else if (! isPlaying )
         {
-            justStartedPlaying.store(false);
+            justStartedPlayingFlag.store(false);
         }
         previousPlayingState = isPlaying;
     }
