@@ -10,7 +10,7 @@ BEGIN_JUCE_MODULE_DECLARATION
       name:             sos_modulator
       description:      ModulatorSynthsOfSelf
       license:          GPL/Commercial
-      dependencies:     juce_core, juce_audio_utils,juce_gui_basics, juce_graphics, juce_audio_processors, sos_curve_adjuster, sliders_sos, sos_IAudioProcessor, sos_popup_window
+      dependencies:     juce_core, juce_audio_utils,juce_gui_basics, juce_graphics, juce_audio_processors,sos_curve_adjuster, sos_sliders, sos_IAudioProcessor, sos_popup_window
 
      END_JUCE_MODULE_DECLARATION
 

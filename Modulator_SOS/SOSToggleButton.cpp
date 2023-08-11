@@ -92,7 +92,14 @@ void SOSToggleButton::paintButton (juce::Graphics& g, bool, bool) {
             g.fillPath(p);
         }
     }
-    g.setColour(textColor);
+    if (getToggleState())
+    {
+        g.setColour(textColor);
+    }
+    else
+    {
+        g.setColour(textColor.interpolatedWith(juce::Colours::lightgrey, 0.35f));
+    }
     g.setFont(15.0f);
     g.drawFittedText(getName(), 0, 0, getWidth(), getHeight(), juce::Justification::centred, 1);
 }
