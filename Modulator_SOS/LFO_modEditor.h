@@ -15,7 +15,7 @@
 #include "RateModesComponent.h"
 #include "DestinationMatrixComponent.h"
 
-#include <sliders_sos/sliders_sos.h>
+#include <sos_sliders/sos_sliders.h>
 #include <sos_curve_adjuster/sos_curve_adjuster.h>
 
 class LFO_modEditor : public juce::Timer, public juce::Component

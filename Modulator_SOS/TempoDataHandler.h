@@ -26,6 +26,8 @@ struct TempoDataHandler
         {
             quarterNoteWithinBar.store(*(info->getPpqPosition()) - *(info->getPpqPositionOfLastBarStart()));
         }
+        
+        
 
         bool isPlaying = info->getIsPlaying();
         HandleJustStartedPlayingFlag(isPlaying);
