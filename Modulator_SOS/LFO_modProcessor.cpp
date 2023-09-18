@@ -53,18 +53,9 @@ void LFO_modProcessor::DetermineIncrementsPerBlock(int numSamples)
 {
     //free
     incrementPerBlockFree = static_cast<double>(*apvts.getRawParameterValue(rateFreeParamID)) / sampleRate * static_cast<double>(numSamples);
-//    DBG(incrementPerBlockFree);
-//    while (incrementPerBlockFree > 1.0)
-//    {
-//        incrementPerBlockFree -= 1.0;
-//    }
     
     //sync
     incrementPerBlockSync = syncTiming.GetIncrementPerSample(dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(rateSyncParamID))->getIndex(), tempoData.tempo.load(), tempoData.timeSigNum.load(), tempoData.timeSigDenom.load()) * static_cast<double>(numSamples);
-//    while (incrementPerBlockSync > 1.0)
-//    {
-//        incrementPerBlockSync -= 1.0;
-//    }
     
     //ensure directions are correct for forwards/backwards settings
     if (selectedDirection.load() == 0) //forwards
@@ -175,20 +166,6 @@ void LFO_modProcessor::IncrementSync()
     {
         shouldResetSyncFlag = true;
     }
-
-
-//        //tighten loop for small subdivisions
-//        if (selectedDirection != 3 /*bounce*/ &&
-//            tempoData.quarterNoteWithinBar < 0.01f)
-//        {
-//            auto selectedIndex = static_cast<int>(*apvts.getRawParameterValue(rateSyncParamID));
-//            if (selectedIndex == TempoSync::SyncOptions::quarternote || selectedIndex == TempoSync::SyncOptions::eighthnote || selectedIndex == TempoSync::SyncOptions::sixteenthnote
-//                || selectedIndex == TempoSync::SyncOptions::thirtysecond)
-//            {
-//                shouldResetSyncFlag = true;
-//                syncWasReset = false;
-//            }
-//        }
         
     if (syncDirection == forwards)
     {
@@ -252,7 +229,6 @@ void LFO_modProcessor::IncrementSync()
     
     if (shouldResetSyncFlag)
     {
-        //6/8 support needed! 
         auto syncChoice = syncTiming.GetSyncOption(static_cast<int>(*apvts.getRawParameterValue(rateSyncParamID)));
         if (syncChoice == TempoSync::SyncOptions::eightBars ||
             syncChoice == TempoSync::SyncOptions::fourBars ||
@@ -289,24 +265,20 @@ void LFO_modProcessor::CheckForBounceCross()
             if (freeDirection == forwards)
             {
                 freeDirection = backwards;
-                //freePhase.store(freePhase.load() - incrementPerBlockFree);
             }
             else
             {
                 freeDirection = forwards;
-                //freePhase.store(freePhase.load() + incrementPerBlockFree);
             }
             IncrementFree();
             //sync
             if (syncDirection == forwards)
             {
                 syncDirection = backwards;
-                //syncPhase.store(syncPhase.load() - incrementPerBlockSync);
             }
             else
             {
                 syncDirection = forwards;
-                //syncPhase.store(syncPhase.load() + incrementPerBlockSync);
             }
             IncrementSync();
         }
@@ -374,7 +346,7 @@ void LFO_modProcessor::SaveState(juce::AudioProcessorValueTreeState& stateToAppe
 }
 void LFO_modProcessor::LoadAndRemoveStateFromAPTVS(juce::ValueTree& apvtsTree)
 {
-    //dbug usage
+    //early return for debug usage if old state is not desired
     //return;
     auto lfoTree = apvtsTree.getChildWithName(name);
     if (lfoTree.isValid())
